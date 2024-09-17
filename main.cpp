@@ -36,6 +36,9 @@ private:
     QSlider *xSlider, *ySlider, *zSlider;
     QLineEdit *hexEntry;
     QFrame *colorDisplay;
+    QLabel *rLabel, *gLabel, *bLabel;
+    QLabel *hLabel, *sLabel, *vLabel;
+    QLabel *xLabel, *yLabel, *zLabel;
 
     void updateColorDisplay();
     void rgbToXyz(int r, int g, int b, float &X, float &Y, float &Z);
@@ -52,16 +55,23 @@ ColorConverterApp::ColorConverterApp(QWidget *parent) : QWidget(parent) {
     rSlider = new QSlider(Qt::Horizontal);
     gSlider = new QSlider(Qt::Horizontal);
     bSlider = new QSlider(Qt::Horizontal);
+    rLabel = new QLabel("0");
+    gLabel = new QLabel("0");
+    bLabel = new QLabel("0");
+
     rSlider->setRange(0, 255);
     gSlider->setRange(0, 255);
     bSlider->setRange(0, 255);
 
     rgbLayout->addWidget(new QLabel("R:"));
     rgbLayout->addWidget(rSlider);
+    rgbLayout->addWidget(rLabel);
     rgbLayout->addWidget(new QLabel("G:"));
     rgbLayout->addWidget(gSlider);
+    rgbLayout->addWidget(gLabel);
     rgbLayout->addWidget(new QLabel("B:"));
     rgbLayout->addWidget(bSlider);
+    rgbLayout->addWidget(bLabel);
     mainLayout->addLayout(rgbLayout);
 
     // HSV Sliders
@@ -69,16 +79,23 @@ ColorConverterApp::ColorConverterApp(QWidget *parent) : QWidget(parent) {
     hSlider = new QSlider(Qt::Horizontal);
     sSlider = new QSlider(Qt::Horizontal);
     vSlider = new QSlider(Qt::Horizontal);
+    hLabel = new QLabel("0");
+    sLabel = new QLabel("0");
+    vLabel = new QLabel("0");
+
     hSlider->setRange(0, 360);
     sSlider->setRange(0, 100);
     vSlider->setRange(0, 100);
 
     hsvLayout->addWidget(new QLabel("H:"));
     hsvLayout->addWidget(hSlider);
+    hsvLayout->addWidget(hLabel);
     hsvLayout->addWidget(new QLabel("S:"));
     hsvLayout->addWidget(sSlider);
+    hsvLayout->addWidget(sLabel);
     hsvLayout->addWidget(new QLabel("V:"));
     hsvLayout->addWidget(vSlider);
+    hsvLayout->addWidget(vLabel);
     mainLayout->addLayout(hsvLayout);
 
     // XYZ Sliders
@@ -86,17 +103,25 @@ ColorConverterApp::ColorConverterApp(QWidget *parent) : QWidget(parent) {
     xSlider = new QSlider(Qt::Horizontal);
     ySlider = new QSlider(Qt::Horizontal);
     zSlider = new QSlider(Qt::Horizontal);
+    xLabel = new QLabel("0");
+    yLabel = new QLabel("0");
+    zLabel = new QLabel("0");
+
     xSlider->setRange(0, 100);
     ySlider->setRange(0, 100);
     zSlider->setRange(0, 100);
 
     xyzLayout->addWidget(new QLabel("X:"));
     xyzLayout->addWidget(xSlider);
+    xyzLayout->addWidget(xLabel);
     xyzLayout->addWidget(new QLabel("Y:"));
     xyzLayout->addWidget(ySlider);
+    xyzLayout->addWidget(yLabel);
     xyzLayout->addWidget(new QLabel("Z:"));
     xyzLayout->addWidget(zSlider);
+    xyzLayout->addWidget(zLabel);
     mainLayout->addLayout(xyzLayout);
+
 
                     // HEX
     QFormLayout *hexLayout = new QFormLayout;
@@ -117,6 +142,7 @@ ColorConverterApp::ColorConverterApp(QWidget *parent) : QWidget(parent) {
     colorDisplay->setFixedSize(100, 100);
     colorDisplay->setStyleSheet("background-color: white");
     mainLayout->addWidget(colorDisplay);
+
 
     // connect RGB sliders
     connect(rSlider, &QSlider::valueChanged, this, &ColorConverterApp::updateColor);
@@ -155,7 +181,10 @@ void ColorConverterApp::updateColor() {
     int g = gSlider->value();
     int b = bSlider->value();
 
-    //qDebug() << "Updating color: R=" << r << " G=" << g << " B=" << b;
+    // Обновляем текстовые поля
+    rLabel->setText(QString::number(r));
+    gLabel->setText(QString::number(g));
+    bLabel->setText(QString::number(b));
 
     currentColor.setRed(r);
     currentColor.setGreen(g);
@@ -167,35 +196,53 @@ void ColorConverterApp::updateColor() {
 
 
 void ColorConverterApp::updateFromHsv() {
-    // Отключаем сигналы ползунков для предотвращения бесконечной рекурсии
+    // Отключаем сигналы RGB ползунков, чтобы избежать циклических вызовов
     rSlider->blockSignals(true);
     gSlider->blockSignals(true);
     bSlider->blockSignals(true);
 
-    int h = hSlider->value() % 360;
+    int h = hSlider->value();
     int s = sSlider->value();
     int v = vSlider->value();
     int r, g, b;
+
+    // Конвертируем HSV в RGB
     hsvToRgb(h, s, v, r, g, b);
+
+    // Устанавливаем значения RGB ползунков
     rSlider->setValue(r);
     gSlider->setValue(g);
     bSlider->setValue(b);
+
+    // Устанавливаем цвет в текущем цвете
     currentColor.setRgb(r, g, b);
 
+    // Обновляем текстовые поля для HSV
+    hLabel->setText(QString::number(h));
+    sLabel->setText(QString::number(s));
+    vLabel->setText(QString::number(v));
+
+    // Также обновляем текстовые поля для RGB
+    rLabel->setText(QString::number(r));
+    gLabel->setText(QString::number(g));
+    bLabel->setText(QString::number(b));
+
+    // Обновляем отображение цвета
     updateColorDisplay();
     convertColor();
 
-    // Включаем сигналы ползунков обратно
+    // Включаем сигналы обратно
     rSlider->blockSignals(false);
     gSlider->blockSignals(false);
     bSlider->blockSignals(false);
 }
 
+
+
 void ColorConverterApp::updateFromXyz() {
-    // Отключаем сигналы ползунков для предотвращения бесконечной рекурсии
-    rSlider->blockSignals(true);
-    gSlider->blockSignals(true);
-    bSlider->blockSignals(true);
+    xSlider->blockSignals(true);
+    ySlider->blockSignals(true);
+    zSlider->blockSignals(true);
 
     float X = xSlider->value();
     float Y = ySlider->value();
@@ -205,16 +252,24 @@ void ColorConverterApp::updateFromXyz() {
     rSlider->setValue(r);
     gSlider->setValue(g);
     bSlider->setValue(b);
-    currentColor.setRgb(r, g, b);
 
+    // Обновляем текстовые поля
+    xLabel->setText(QString::number(X));
+    yLabel->setText(QString::number(Y));
+    zLabel->setText(QString::number(Z));
+    rLabel->setText(QString::number(r));
+    gLabel->setText(QString::number(g));
+    bLabel->setText(QString::number(b));
+
+    currentColor.setRgb(r, g, b);
     updateColorDisplay();
     convertColor();
 
-    // Включаем сигналы ползунков обратно
-    rSlider->blockSignals(false);
-    gSlider->blockSignals(false);
-    bSlider->blockSignals(false);
+    xSlider->blockSignals(false);
+    ySlider->blockSignals(false);
+    zSlider->blockSignals(false);
 }
+
 
 
 void ColorConverterApp::convertColor() {
@@ -222,83 +277,87 @@ void ColorConverterApp::convertColor() {
     int g = gSlider->value();
     int b = bSlider->value();
 
-    //qDebug() << "Converting color: R=" << r << " G=" << g << " B=" << b;
-
-    // Обновляем HEX
+    // Конвертация RGB в HEX
     hexEntry->setText(QString("#%1%2%3")
                           .arg(r, 2, 16, QChar('0'))
                           .arg(g, 2, 16, QChar('0'))
                           .arg(b, 2, 16, QChar('0')).toUpper());
 
-    // Конвертация RGB v XYZ
+    // Конвертация RGB -> XYZ
     float X, Y, Z;
     rgbToXyz(r, g, b, X, Y, Z);
 
-    //qDebug() << "RGB to XYZ: X=" << X << " Y=" << Y << " Z=" << Z;
+    qDebug() << "RGB to XYZ: X=" << X << " Y=" << Y << " Z=" << Z;
 
     xSlider->blockSignals(true);
     ySlider->blockSignals(true);
     zSlider->blockSignals(true);
 
+    // Обновление ползунков X, Y, Z
     xSlider->setValue(static_cast<int>(X));
     ySlider->setValue(static_cast<int>(Y));
     zSlider->setValue(static_cast<int>(Z));
+
+    // Обновление текстовых полей X, Y, Z
+    xLabel->setText(QString::number(static_cast<int>(X)));
+    yLabel->setText(QString::number(static_cast<int>(Y)));
+    zLabel->setText(QString::number(static_cast<int>(Z)));
 
     xSlider->blockSignals(false);
     ySlider->blockSignals(false);
     zSlider->blockSignals(false);
 
-    // Конвертация RGB v HSV
+    // Конвертация RGB -> HSV
     int H, S, V;
     rgbToHsv(r, g, b, H, S, V);
 
-    //qDebug() << "RGB to HSV: H=" << H << " S=" << S << " V=" << V;
+    qDebug() << "RGB to HSV: H=" << H << " S=" << S << " V=" << V;
 
     hSlider->blockSignals(true);
     sSlider->blockSignals(true);
     vSlider->blockSignals(true);
 
+    // Обновление ползунков H, S, V
     hSlider->setValue(H);
     sSlider->setValue(S);
     vSlider->setValue(V);
+
+    // Обновление текстовых полей H, S, V
+    hLabel->setText(QString::number(H));
+    sLabel->setText(QString::number(S));
+    vLabel->setText(QString::number(V));
 
     hSlider->blockSignals(false);
     sSlider->blockSignals(false);
     vSlider->blockSignals(false);
 }
 
+
 void ColorConverterApp::updateFromHex() {
     QString hexColor = hexEntry->text();
     if (hexColor.isEmpty() || !QColor(hexColor).isValid()) {
-        qDebug() << "Invalid HEX color";
         return;
     }
     QColor color(hexColor);
-    //qDebug() << "HEX color:" << hexColor;
-
-    rSlider->blockSignals(true);
-    gSlider->blockSignals(true);
-    bSlider->blockSignals(true);
 
     int r = color.red();
     int g = color.green();
     int b = color.blue();
 
-    //qDebug() << "Updating sliders from HEX: R=" << r << " G=" << g << " B=" << b;
-
     rSlider->setValue(r);
     gSlider->setValue(g);
     bSlider->setValue(b);
 
+    // Обновляем текстовые поля
+    rLabel->setText(QString::number(r));
+    gLabel->setText(QString::number(g));
+    bLabel->setText(QString::number(b));
+
     currentColor = color;
-
-    rSlider->blockSignals(false);
-    gSlider->blockSignals(false);
-    bSlider->blockSignals(false);
-
     updateColorDisplay();
     convertColor();
 }
+
 
 void ColorConverterApp::updateColorDisplay() {
     QString colorStyle = QString("background-color: rgb(%1, %2, %3);")
