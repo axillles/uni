@@ -53,9 +53,11 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = ../../main.cpp \
-		../../mainwindow.cpp moc_mainwindow.cpp
+		../../mainwindow.cpp qrc_ico.cpp \
+		moc_mainwindow.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
+		qrc_ico.o \
 		moc_mainwindow.o
 DIST          = /Qt/6.6.3/macos/mkspecs/features/spec_pre.prf \
 		/Qt/6.6.3/macos/mkspecs/features/device_config.prf \
@@ -371,6 +373,7 @@ DIST          = /Qt/6.6.3/macos/mkspecs/features/spec_pre.prf \
 		/Qt/6.6.3/macos/mkspecs/features/qt_config.prf \
 		/Qt/6.6.3/macos/mkspecs/macx-clang/qmake.conf \
 		/Qt/6.6.3/macos/mkspecs/features/spec_post.prf \
+		../../.qmake.stash \
 		/Qt/6.6.3/macos/mkspecs/features/exclusive_builds.prf \
 		/Qt/6.6.3/macos/mkspecs/features/mac/sdk.prf \
 		/Qt/6.6.3/macos/mkspecs/features/toolchain.prf \
@@ -410,7 +413,7 @@ TARGET        = changecolor.app/Contents/MacOS/changecolor
 EXPORT_QMAKE_MAC_SDK = macosx
 EXPORT_QMAKE_MAC_SDK_VERSION = 13.3
 EXPORT_QMAKE_XCODE_DEVELOPER_PATH = /Library/Developer/CommandLineTools
-EXPORT__QMAKE_STASH_ = 
+EXPORT__QMAKE_STASH_ = /Users/artemgavrilov/changecolor/build/Qt_for_macOS-Debug/.qmake.stash
 EXPORT_VALID_ARCHS = x86_64 arm64
 EXPORT_DEFAULT_ARCHS = arm64
 EXPORT_ARCHS = $(filter $(EXPORT_VALID_ARCHS), $(if $(ARCHS), $(ARCHS), $(if $(EXPORT_DEFAULT_ARCHS), $(EXPORT_DEFAULT_ARCHS), $(EXPORT_VALID_ARCHS))))
@@ -740,6 +743,7 @@ Makefile: ../../changecolor.pro ../../../Qt/6.6.3/macos/mkspecs/features/spec_pr
 		../../../Qt/6.6.3/macos/mkspecs/features/qt_config.prf \
 		../../../Qt/6.6.3/macos/mkspecs/macx-clang/qmake.conf \
 		../../../Qt/6.6.3/macos/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		../../../Qt/6.6.3/macos/mkspecs/features/exclusive_builds.prf \
 		../../../Qt/6.6.3/macos/mkspecs/features/mac/sdk.prf \
 		../../../Qt/6.6.3/macos/mkspecs/features/toolchain.prf \
@@ -770,6 +774,7 @@ Makefile: ../../changecolor.pro ../../../Qt/6.6.3/macos/mkspecs/features/spec_pr
 		../../../Qt/6.6.3/macos/mkspecs/features/yacc.prf \
 		../../../Qt/6.6.3/macos/mkspecs/features/lex.prf \
 		../../changecolor.pro \
+		../../ico.qrc \
 		../../../Qt/6.6.3/macos/lib/QtWidgets.framework/Resources/QtWidgets.prl \
 		../../../Qt/6.6.3/macos/lib/QtGui.framework/Resources/QtGui.prl \
 		../../../Qt/6.6.3/macos/lib/QtCore.framework/Resources/QtCore.prl
@@ -1088,6 +1093,7 @@ Makefile: ../../changecolor.pro ../../../Qt/6.6.3/macos/mkspecs/features/spec_pr
 ../../../Qt/6.6.3/macos/mkspecs/features/qt_config.prf:
 ../../../Qt/6.6.3/macos/mkspecs/macx-clang/qmake.conf:
 ../../../Qt/6.6.3/macos/mkspecs/features/spec_post.prf:
+.qmake.stash:
 ../../../Qt/6.6.3/macos/mkspecs/features/exclusive_builds.prf:
 ../../../Qt/6.6.3/macos/mkspecs/features/mac/sdk.prf:
 ../../../Qt/6.6.3/macos/mkspecs/features/toolchain.prf:
@@ -1118,6 +1124,7 @@ Makefile: ../../changecolor.pro ../../../Qt/6.6.3/macos/mkspecs/features/spec_pr
 ../../../Qt/6.6.3/macos/mkspecs/features/yacc.prf:
 ../../../Qt/6.6.3/macos/mkspecs/features/lex.prf:
 ../../changecolor.pro:
+../../ico.qrc:
 ../../../Qt/6.6.3/macos/lib/QtWidgets.framework/Resources/QtWidgets.prl:
 ../../../Qt/6.6.3/macos/lib/QtGui.framework/Resources/QtGui.prl:
 ../../../Qt/6.6.3/macos/lib/QtCore.framework/Resources/QtCore.prl:
@@ -1145,6 +1152,7 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
+	$(COPY_FILE) --parents ../../ico.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents ../../mainwindow.h $(DISTDIR)/
 	$(COPY_FILE) --parents ../../main.cpp ../../mainwindow.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../../mainwindow.ui $(DISTDIR)/
@@ -1157,6 +1165,7 @@ clean: compiler_clean
 
 distclean: clean 
 	-$(DEL_FILE) -r changecolor.app
+	-$(DEL_FILE) .qmake.stash
 	-$(DEL_FILE) Makefile
 
 
@@ -1173,8 +1182,13 @@ check: first
 
 benchmark: first
 
-compiler_rcc_make_all:
+compiler_rcc_make_all: qrc_ico.cpp
 compiler_rcc_clean:
+	-$(DEL_FILE) qrc_ico.cpp
+qrc_ico.cpp: ../../ico.qrc \
+		../../../Qt/6.6.3/macos/libexec/rcc
+	/Users/artemgavrilov/Qt/6.6.3/macos/libexec/rcc -name ico --no-zstd ../../ico.qrc -o qrc_ico.cpp
+
 compiler_moc_header_make_all: moc_mainwindow.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_mainwindow.cpp
@@ -1215,6 +1229,12 @@ main.moc: ../../main.cpp \
 		../../../Qt/6.6.3/macos/lib/QtWidgets.framework/Headers/qformlayout.h \
 		../../../Qt/6.6.3/macos/lib/QtCore.framework/Headers/QString \
 		../../../Qt/6.6.3/macos/lib/QtCore.framework/Headers/qstring.h \
+		../../../Qt/6.6.3/macos/lib/QtCore.framework/Headers/QRegularExpression \
+		../../../Qt/6.6.3/macos/lib/QtCore.framework/Headers/qregularexpression.h \
+		../../../Qt/6.6.3/macos/lib/QtGui.framework/Headers/QRegularExpressionValidator \
+		../../../Qt/6.6.3/macos/lib/QtGui.framework/Headers/qvalidator.h \
+		../../../Qt/6.6.3/macos/lib/QtCore.framework/Headers/QDebug \
+		../../../Qt/6.6.3/macos/lib/QtCore.framework/Headers/qdebug.h \
 		../../../Qt/6.6.3/macos/libexec/moc
 	/Users/artemgavrilov/Qt/6.6.3/macos/libexec/moc $(DEFINES) -D__APPLE__ -D__GNUC__=4 -D__APPLE_CC__ -D__cplusplus=199711L -D__APPLE_CC__=6000 -D__clang__ -D__clang_major__=14 -D__clang_minor__=0 -D__clang_patchlevel__=3 -D__GNUC__=4 -D__GNUC_MINOR__=2 -D__GNUC_PATCHLEVEL__=1 -I/Users/artemgavrilov/Qt/6.6.3/macos/mkspecs/macx-clang -I/Users/artemgavrilov/changecolor -I/Users/artemgavrilov/Qt/6.6.3/macos/lib/QtWidgets.framework/Headers -I/Users/artemgavrilov/Qt/6.6.3/macos/lib/QtGui.framework/Headers -I/Users/artemgavrilov/Qt/6.6.3/macos/lib/QtCore.framework/Headers -I. -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1 -I/Library/Developer/CommandLineTools/usr/lib/clang/14.0.3/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -I/Library/Developer/CommandLineTools/usr/include -F/Users/artemgavrilov/Qt/6.6.3/macos/lib ../../main.cpp -o main.moc
 
@@ -1233,7 +1253,7 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_header_clean compiler_moc_source_clean compiler_uic_clean 
+compiler_clean: compiler_rcc_clean compiler_moc_header_clean compiler_moc_source_clean compiler_uic_clean 
 
 ####### Compile
 
@@ -1262,6 +1282,12 @@ main.o: ../../main.cpp ../../../Qt/6.6.3/macos/lib/QtWidgets.framework/Headers/Q
 		../../../Qt/6.6.3/macos/lib/QtWidgets.framework/Headers/qformlayout.h \
 		../../../Qt/6.6.3/macos/lib/QtCore.framework/Headers/QString \
 		../../../Qt/6.6.3/macos/lib/QtCore.framework/Headers/qstring.h \
+		../../../Qt/6.6.3/macos/lib/QtCore.framework/Headers/QRegularExpression \
+		../../../Qt/6.6.3/macos/lib/QtCore.framework/Headers/qregularexpression.h \
+		../../../Qt/6.6.3/macos/lib/QtGui.framework/Headers/QRegularExpressionValidator \
+		../../../Qt/6.6.3/macos/lib/QtGui.framework/Headers/qvalidator.h \
+		../../../Qt/6.6.3/macos/lib/QtCore.framework/Headers/QDebug \
+		../../../Qt/6.6.3/macos/lib/QtCore.framework/Headers/qdebug.h \
 		main.moc
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../main.cpp
 
@@ -1270,6 +1296,9 @@ mainwindow.o: ../../mainwindow.cpp ../../mainwindow.h \
 		../../../Qt/6.6.3/macos/lib/QtWidgets.framework/Headers/qmainwindow.h \
 		ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../../mainwindow.cpp
+
+qrc_ico.o: qrc_ico.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_ico.o qrc_ico.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
