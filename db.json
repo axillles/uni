@@ -1,0 +1,49 @@
+{
+  "recipes": [
+    {
+      "id": 1,
+      "title": "Борщ украинский",
+      "ingredients": [
+        "Свекла",
+        "Капуста",
+        "Картофель",
+        "Морковь",
+        "Лук"
+      ],
+      "instructions": "1. Сварить бульон\n2. Добавить овощи\n3. Варить до готовности",
+      "cookingTime": "2 часа"
+    },
+    {
+      "title": "Блины классические",
+      "ingredients": [
+        "Мука",
+        "Молоко",
+        "Яйца",
+        "Сахар",
+        "Соль"
+      ],
+      "instructions": "1. Смешать все ингредиенты\n2. Жарить на сковороде",
+      "cookingTime": "50 минут",
+      "id": 2
+    },
+    {
+      "title": "tlf",
+      "ingredients": [
+        "аыуоташ",
+        "акупкп"
+      ],
+      "instructions": "пвкопшревр",
+      "cookingTime": "час",
+      "id": 4
+    },
+    {
+      "title": "dsadsatl",
+      "ingredients": [
+        "dasdasd"
+      ],
+      "instructions": "sadasd",
+      "cookingTime": "123",
+      "id": 5
+    }
+  ]
+}

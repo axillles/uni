@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сборник рецептов</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <header>
+        <h1>Сборник рецептов</h1>
+        <nav>
+            <button id="addRecipeBtn">Добавить рецепт</button>
+        </nav>
+    </header>
+
+    <main>
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Поиск по названию...">
+            </div>
+            <div class="sort-container">
+                <button onclick="toggleSort()" id="sortBtn">Сортировать по названию ↑</button>
+            </div>
+        </div>
+
+        <div id="recipesList"></div>
+        <div id="pagination" class="pagination"></div>
+
+        <div id="recipeModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Добавить рецепт</h2>
+                <form id="recipeForm">
+                    <div class="form-group">
+                        <label for="title">Название:</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ingredients">Ингредиенты (через запятую):</label>
+                        <textarea id="ingredients" name="ingredients" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="instructions">Инструкция приготовления:</label>
+                        <textarea id="instructions" name="instructions" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="cookingTime">Время приготовления:</label>
+                        <input type="text" id="cookingTime" name="cookingTime" required>
+                    </div>
+                    <button type="submit">Сохранить</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="/javascripts/app.js"></script>
+</body>
+</html> 
